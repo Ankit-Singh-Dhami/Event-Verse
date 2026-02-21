@@ -28,6 +28,8 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const EventCalendarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -37,129 +39,82 @@ const EventCalendarPage = () => {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: "Tech Talk: AI in 2024",
-      description:
-        "Industry experts discuss the future of AI and machine learning",
-      date: "2024-03-15",
-      startTime: "14:00",
-      endTime: "16:00",
-      location: "Auditorium A",
-      category: "academic",
-      organizer: "Computer Science Department",
-      attendees: 120,
-      maxAttendees: 200,
-      status: "upcoming",
-      priority: "high",
-    },
-    {
-      id: 2,
-      title: "Sports Fest Opening",
-      description: "Annual sports festival opening ceremony",
-      date: "2024-03-18",
-      startTime: "10:00",
-      endTime: "12:00",
-      location: "Sports Complex",
-      category: "sports",
-      organizer: "Sports Club",
-      attendees: 250,
-      maxAttendees: 500,
-      status: "upcoming",
-      priority: "medium",
-    },
-    {
-      id: 3,
-      title: "Cultural Night",
-      description: "Music, dance and drama performances",
-      date: "2024-03-20",
-      startTime: "18:00",
-      endTime: "22:00",
-      location: "Open Amphitheater",
-      category: "cultural",
-      organizer: "Cultural Club",
-      attendees: 180,
-      maxAttendees: 300,
-      status: "upcoming",
-      priority: "high",
-    },
-    {
-      id: 4,
-      title: "Startup Workshop",
-      description: "How to build and launch your startup",
-      date: "2024-03-22",
-      startTime: "11:00",
-      endTime: "13:00",
-      location: "E-Cell Room",
-      category: "entrepreneurship",
-      organizer: "Innovation E-Cell",
-      attendees: 85,
-      maxAttendees: 100,
-      status: "upcoming",
-      priority: "medium",
-    },
-    {
-      id: 5,
-      title: "Career Fair",
-      description: "Meet top companies and recruiters",
-      date: "2024-03-25",
-      startTime: "09:00",
-      endTime: "17:00",
-      location: "Main Hall",
-      category: "career",
-      organizer: "Placement Cell",
-      attendees: 500,
-      maxAttendees: 1000,
-      status: "upcoming",
-      priority: "high",
-    },
-    {
-      id: 6,
-      title: "Research Paper Writing",
-      description: "Workshop on academic writing and publishing",
-      date: "2024-03-12",
-      startTime: "15:00",
-      endTime: "17:00",
-      location: "Library Seminar Room",
-      category: "academic",
-      organizer: "Research Cell",
-      attendees: 60,
-      maxAttendees: 80,
-      status: "past",
-      priority: "low",
-    },
-    {
-      id: 7,
-      title: "Blood Donation Camp",
-      description: "Annual blood donation drive",
-      date: "2024-03-28",
-      startTime: "10:00",
-      endTime: "16:00",
-      location: "Medical Center",
-      category: "social",
-      organizer: "NSS Unit",
-      attendees: 200,
-      maxAttendees: 300,
-      status: "upcoming",
-      priority: "medium",
-    },
-    {
-      id: 8,
-      title: "Hackathon Finals",
-      description: "24-hour coding competition finals",
-      date: "2024-03-30",
-      startTime: "09:00",
-      endTime: "09:00",
-      location: "Computer Center",
-      category: "technical",
-      organizer: "Coding Club",
-      attendees: 50,
-      maxAttendees: 100,
-      status: "upcoming",
-      priority: "high",
-    },
-  ]);
+  const events = useQuery(api.events.getAllEvents);
+  console.log(events);
+
+  if (!events) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header skeleton */}
+          <div className="mb-6 md:mb-8 animate-pulse">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gray-200 rounded-lg w-12 h-12"></div>
+              <div>
+                <div className="h-6 bg-gray-200 rounded w-48 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-64"></div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
+            {/* Left column skeleton */}
+            <div className="lg:w-2/3 space-y-4 md:space-y-6">
+              {/* Calendar skeleton */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="h-6 bg-gray-200 rounded w-32"></div>
+                  <div className="h-8 bg-gray-200 rounded w-40"></div>
+                </div>
+                <div className="grid grid-cols-7 gap-1">
+                  {[...Array(7)].map((_, i) => (
+                    <div key={i} className="h-4 bg-gray-200 rounded"></div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1 mt-2">
+                  {[...Array(35)].map((_, i) => (
+                    <div key={i} className="h-16 bg-gray-100 rounded"></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upcoming events skeleton */}
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div className="h-6 bg-gray-200 rounded w-40 mb-4"></div>
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="p-3 border border-gray-200 rounded-lg"
+                    >
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right column skeleton */}
+            <div className="lg:w-1/3 space-y-4">
+              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div className="h-6 bg-gray-200 rounded w-32 mb-4"></div>
+                <div className="space-y-2">
+                  {[...Array(4)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-4 bg-gray-200 rounded w-full"
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const categories = [
     { id: "all", name: "All Events", color: "bg-gray-100 text-gray-800" },
@@ -256,14 +211,19 @@ const EventCalendarPage = () => {
 
   const getEventsForDate = (date: Date) => {
     const dateStr = formatDate(date);
-    return events.filter((event) => event.date === dateStr);
+    return events.filter((event) => event.startDate === dateStr);
   };
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch =
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.location.toLowerCase().includes(searchQuery.toLowerCase());
+      (event.locationType === "physical" &&
+        event.physicalLocation
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase())) ||
+      (event.locationType === "online" &&
+        event.onlineLink?.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const matchesCategory =
       selectedCategories.length === 0 ||
@@ -272,9 +232,6 @@ const EventCalendarPage = () => {
 
     return matchesSearch && matchesCategory;
   });
-
-  const upcomingEvents = filteredEvents.filter((e) => e.status === "upcoming");
-  const pastEvents = filteredEvents.filter((e) => e.status === "past");
 
   const handlePrevMonth = () => {
     setCurrentDate(
@@ -307,19 +264,6 @@ const EventCalendarPage = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-100 text-red-800";
-      case "medium":
-        return "bg-yellow-100 text-yellow-800";
-      case "low":
-        return "bg-green-100 text-green-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const getCategoryColor = (category: string) => {
     const cat = categories.find((c) => c.id === category);
     return cat ? cat.color : "bg-gray-100 text-gray-800";
@@ -349,13 +293,6 @@ const EventCalendarPage = () => {
                         ?.name
                     }
                   </span>
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${getPriorityColor(selectedEvent.priority)}`}
-                  >
-                    {selectedEvent.priority.charAt(0).toUpperCase() +
-                      selectedEvent.priority.slice(1)}{" "}
-                    Priority
-                  </span>
                 </div>
               </div>
               <button
@@ -371,12 +308,15 @@ const EventCalendarPage = () => {
                 <CalendarIcon className="w-5 h-5 text-gray-400 mt-0.5" />
                 <div>
                   <p className="font-medium text-gray-900">
-                    {new Date(selectedEvent.date).toLocaleDateString("en-US", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
+                    {new Date(selectedEvent.startDate).toLocaleDateString(
+                      "en-US",
+                      {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
                   </p>
                   <p className="text-gray-600">
                     {selectedEvent.startTime} - {selectedEvent.endTime}
@@ -386,7 +326,25 @@ const EventCalendarPage = () => {
 
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-gray-400" />
-                <p className="text-gray-600">{selectedEvent.location}</p>
+
+                {selectedEvent.locationType === "online" &&
+                selectedEvent.onlineLink ? (
+                  <a
+                    href={selectedEvent.onlineLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline"
+                  >
+                    Join Online
+                  </a>
+                ) : selectedEvent.locationType === "physical" &&
+                  selectedEvent.physicalLocation ? (
+                  <p className="text-gray-600">
+                    {selectedEvent.physicalLocation}
+                  </p>
+                ) : (
+                  <p className="text-gray-600">Location TBA</p>
+                )}
               </div>
 
               <div className="flex items-center gap-3">
@@ -404,11 +362,12 @@ const EventCalendarPage = () => {
             </div>
 
             <div className="flex gap-3">
-              <Link href={`/dashboard/register?eventId=${selectedEvent.id}`}>
-                <button className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center justify-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  Register Now
-                </button>
+              <Link
+                href={`/dashboard/register?eventId=${selectedEvent._id}`}
+                className="flex-1 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center justify-center gap-2"
+              >
+                <CheckCircle className="w-5 h-5" />
+                Register Now
               </Link>
               <button className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                 <Share2 className="w-5 h-5" />
@@ -581,7 +540,7 @@ const EventCalendarPage = () => {
                             <div className="space-y-1 max-h-[60px] sm:max-h-[80px] overflow-y-auto">
                               {dayEvents.slice(0, 3).map((event) => (
                                 <div
-                                  key={event.id}
+                                  key={event._id}
                                   onClick={() => handleEventClick(event)}
                                   className={`px-2 py-1 rounded text-xs cursor-pointer truncate ${getCategoryColor(event.category)} hover:opacity-90 transition`}
                                 >
@@ -696,9 +655,9 @@ const EventCalendarPage = () => {
               </div>
 
               <div className="space-y-3">
-                {upcomingEvents.map((event) => (
+                {filteredEvents.map((event) => (
                   <div
-                    key={event.id}
+                    key={event._id}
                     className="p-3 sm:p-4 border border-gray-200 rounded-lg sm:rounded-xl hover:shadow-sm transition cursor-pointer"
                     onClick={() => handleEventClick(event)}
                   >
@@ -708,18 +667,13 @@ const EventCalendarPage = () => {
                           <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                             {event.title}
                           </h3>
-                          <span
-                            className={`px-2 py-0.5 rounded-full text-xs ${getPriorityColor(event.priority)}`}
-                          >
-                            {event.priority.charAt(0).toUpperCase()}
-                          </span>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mb-3">
                           <div className="flex items-center gap-1">
                             <CalendarIcon className="w-3 h-3 sm:w-4 sm:h-4" />
                             <span>
-                              {new Date(event.date).toLocaleDateString(
+                              {new Date(event.startDate).toLocaleDateString(
                                 "en-US",
                                 { month: "short", day: "numeric" },
                               )}
@@ -733,7 +687,19 @@ const EventCalendarPage = () => {
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
-                            <span>{event.location}</span>
+
+                            {event.locationType === "online" ? (
+                              <a
+                                href={event.onlineLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                Join Online
+                              </a>
+                            ) : (
+                              <span>{event.physicalLocation}</span>
+                            )}
                           </div>
                         </div>
 
@@ -764,7 +730,7 @@ const EventCalendarPage = () => {
                 ))}
               </div>
 
-              {upcomingEvents.length === 0 && (
+              {events.length === 0 && (
                 <div className="text-center py-6 sm:py-8">
                   <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                   <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
@@ -841,7 +807,7 @@ const EventCalendarPage = () => {
               <div className="space-y-3">
                 {getEventsForDate(new Date()).map((event) => (
                   <div
-                    key={event.id}
+                    key={event._id}
                     className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
                   >
                     <div className="flex justify-between items-start mb-2">
@@ -863,8 +829,24 @@ const EventCalendarPage = () => {
                       <span>
                         {event.startTime} - {event.endTime}
                       </span>
+
                       <MapPin className="w-3 h-3 ml-2" />
-                      <span>{event.location}</span>
+
+                      {event.locationType === "online" && event.onlineLink ? (
+                        <a
+                          href={event.onlineLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          Online Event
+                        </a>
+                      ) : event.locationType === "physical" &&
+                        event.physicalLocation ? (
+                        <span>{event.physicalLocation}</span>
+                      ) : (
+                        <span>Location TBA</span>
+                      )}
                     </div>
                   </div>
                 ))}

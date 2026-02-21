@@ -15,79 +15,34 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-
-// Sample events data (same as in calendar page)
-const events = [
-  {
-    id: 1,
-    title: "Tech Talk: AI in 2024",
-    date: "2024-03-15",
-    time: "14:00 - 16:00",
-    location: "Auditorium A",
-    category: "academic",
-  },
-  {
-    id: 2,
-    title: "Sports Fest Opening",
-    date: "2024-03-18",
-    time: "10:00 - 12:00",
-    location: "Sports Complex",
-    category: "sports",
-  },
-  {
-    id: 3,
-    title: "Cultural Night",
-    date: "2024-03-20",
-    time: "18:00 - 22:00",
-    location: "Open Amphitheater",
-    category: "cultural",
-  },
-  {
-    id: 4,
-    title: "Startup Workshop",
-    date: "2024-03-22",
-    time: "11:00 - 13:00",
-    location: "E-Cell Room",
-    category: "entrepreneurship",
-  },
-  {
-    id: 5,
-    title: "Career Fair",
-    date: "2024-03-25",
-    time: "09:00 - 17:00",
-    location: "Main Hall",
-    category: "career",
-  },
-  {
-    id: 6,
-    title: "Research Paper Writing",
-    date: "2024-03-12",
-    time: "15:00 - 17:00",
-    location: "Library Seminar Room",
-    category: "academic",
-  },
-  {
-    id: 7,
-    title: "Blood Donation Camp",
-    date: "2024-03-28",
-    time: "10:00 - 16:00",
-    location: "Medical Center",
-    category: "social",
-  },
-  {
-    id: 8,
-    title: "Hackathon Finals",
-    date: "2024-03-30",
-    time: "09:00 - 09:00",
-    location: "Computer Center",
-    category: "technical",
-  },
-];
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
+import { PuffLoader } from "react-spinners";
+import { toast } from "sonner";
 
 const EventRegistrationPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
+  const events = useQuery(api.events.getAllEvents);
+  console.log(events);
+
+  if (!events) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <PuffLoader color="#2563eb" size={80} />
+          <p className="mt-4 text-gray-600 text-lg">
+            Preparing registration...
+          </p>
+          <p className="text-sm text-gray-400">Just a moment</p>
+        </div>
+      </div>
+    );
+  }
+
+  const register = useMutation(api.registrations.createRegistration);
 
   const [selectedEventId, setSelectedEventId] = useState<string>(eventId || "");
   const [formData, setFormData] = useState({
@@ -104,7 +59,7 @@ const EventRegistrationPage = () => {
 
   // Set selected event from URL param
   useEffect(() => {
-    if (eventId && events.some((e) => e.id.toString() === eventId)) {
+    if (eventId && events.some((e) => e._id.toString() === eventId)) {
       setSelectedEventId(eventId);
     }
   }, [eventId]);
@@ -168,34 +123,50 @@ const EventRegistrationPage = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    if (!selectedEventId) {
+      return;
+    }
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
+    try {
+      setIsSubmitting(true);
 
-      // Reset form after success (optional)
-      setFormData({
-        fullName: "",
-        email: "",
-        phone: "",
-        college: "",
-        yearOfStudy: "",
-        comments: "",
+      await register({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        college: formData.college,
+        yearOfStudy: formData.yearOfStudy,
+        comments: formData.comments || undefined,
+        eventId: selectedEventId as any,
       });
-      setSelectedEventId("");
 
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+      toast.success("🎉 Registration Successful!", {
+        description: "You are now registered for this event.",
+      });
+    } catch (error: any) {
+      const message = error?.message || "Something went wrong";
 
-      // Hide success message after 5 seconds
-      setTimeout(() => setSubmitSuccess(false), 5000);
-    }, 1500);
+      if (message.includes("already registered")) {
+        toast.error("⚠️ Already Registered", {
+          description: "You have already registered for this event.",
+        });
+      } else if (message.includes("Event not found")) {
+        toast.error("Event Not Found", {
+          description: "This event may have been removed.",
+        });
+      } else {
+        toast.error("Registration Failed", {
+          description: message,
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const selectedEvent = events.find((e) => e.id.toString() === selectedEventId);
+  const selectedEvent = events.find(
+    (e) => e._id.toString() === selectedEventId,
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4">
@@ -262,9 +233,10 @@ const EventRegistrationPage = () => {
               >
                 <option value="">-- Choose an event --</option>
                 {events.map((event) => (
-                  <option key={event.id} value={event.id.toString()}>
-                    {event.title} - {new Date(event.date).toLocaleDateString()}{" "}
-                    ({event.time})
+                  <option key={event._id} value={event._id.toString()}>
+                    {event.title} -{" "}
+                    {new Date(event.startDate).toLocaleDateString()} (
+                    {event.startTime})
                   </option>
                 ))}
               </select>
@@ -286,14 +258,29 @@ const EventRegistrationPage = () => {
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     <span>
-                      {new Date(selectedEvent.date).toLocaleDateString()}
+                      {new Date(selectedEvent.startDate).toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <span>{selectedEvent.time}</span>
+                    <span>{selectedEvent.startTime}</span>
                   </div>
                   <div className="flex items-center gap-1 col-span-2">
-                    <span>{selectedEvent.location}</span>
+                    {selectedEvent.locationType === "online" &&
+                    selectedEvent.onlineLink ? (
+                      <a
+                        href={selectedEvent.onlineLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Join Online
+                      </a>
+                    ) : selectedEvent.locationType === "physical" &&
+                      selectedEvent.physicalLocation ? (
+                      <span>{selectedEvent.physicalLocation}</span>
+                    ) : (
+                      <span>Location TBA</span>
+                    )}
                   </div>
                 </div>
               </div>

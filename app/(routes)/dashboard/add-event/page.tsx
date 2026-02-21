@@ -21,8 +21,15 @@ import {
   AlertCircle,
   ArrowLeft,
 } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const AddEventPage = () => {
+  const createEvent = useMutation(api.events.createEvent);
+  const router = useRouter();
+
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -202,18 +209,67 @@ const AddEventPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validateStep(4)) {
-      return;
-    }
-    setIsSubmitting(true);
+    if (isSubmitting) return; // prevent double submit
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      setIsSubmitting(true);
+
+      await createEvent({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        tags: formData.tags,
+
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        timezone: "IST",
+
+        isRecurring: false,
+        recurrence: undefined,
+
+        locationType: formData.locationType,
+        physicalLocation:
+          formData.locationType === "physical"
+            ? formData.physicalLocation
+            : undefined,
+        onlineLink:
+          formData.locationType === "online" ? formData.onlineLink : undefined,
+
+        maxAttendees: formData.maxAttendees
+          ? Number(formData.maxAttendees)
+          : undefined,
+
+        registrationRequired: true,
+        registrationDeadline: formData.registrationDeadline,
+
+        organizer: formData.organizer,
+        contactEmail: formData.contactEmail,
+        contactPhone: formData.contactPhone,
+        website: formData.website,
+
+        visibility: "public",
+        allowRegistration: true,
+        allowWaitlist: true,
+
+        imageStorageId: undefined,
+      });
+
+      toast.success("🎉 Event Created Successfully!", {
+        description: "Redirecting to dashboard...",
+      });
+
+      setTimeout(() => {
+        router.replace("/dashboard");
+      }, 1200);
+    } catch (error: any) {
+      toast.error("Failed to create event", {
+        description: error?.message || "Something went wrong",
+      });
+    } finally {
       setIsSubmitting(false);
-      alert("Event created successfully!");
-      // Redirect will be handled by the Link component or we can use window.location
-      window.location.href = "/dashboard";
-    }, 2000);
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1265,8 +1321,8 @@ const AddEventPage = () => {
               </button>
             ) : (
               <button
-                type="submit"
-                disabled={isSubmitting}
+                type="button"
+                onClick={handleSubmit}
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? (
