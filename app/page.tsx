@@ -6,7 +6,10 @@ const page = () => {
   return (
     <>
       <Header />
-      <Main />
+      <main className="pt-24">
+        <Main />
+      </main>
+
       <Footer />
     </>
   );

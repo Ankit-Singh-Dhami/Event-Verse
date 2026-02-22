@@ -11,6 +11,7 @@
 import type * as Schema from "../Schema.js";
 import type * as events from "../events.js";
 import type * as registrations from "../registrations.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -22,6 +23,7 @@ declare const fullApi: ApiFromModules<{
   Schema: typeof Schema;
   events: typeof events;
   registrations: typeof registrations;
+  users: typeof users;
 }>;
 
 /**

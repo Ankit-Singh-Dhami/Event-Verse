@@ -30,6 +30,8 @@ import {
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/nextjs";
+import { useMutation } from "convex/react";
 
 const EventCalendarPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -39,6 +41,23 @@ const EventCalendarPage = () => {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const { user, isLoaded } = useUser();
+  const createUser = useMutation(api.users.createUser);
+  const dbUser = useQuery(api.users.getCurrentUser);
+  console.log("dbuser", dbUser);
+  console.log(user);
+
+  useEffect(() => {
+    if (!isLoaded || !user) return;
+
+    createUser({
+      name: user.fullName || "No Name",
+      email: user.primaryEmailAddress?.emailAddress || "",
+      image: user.imageUrl,
+    });
+  }, [user, isLoaded]);
+
   const events = useQuery(api.events.getAllEvents);
   console.log(events);
 
@@ -402,6 +421,7 @@ const EventCalendarPage = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* {dbUser?.role === "admin" && ( */}
               <Link href="/dashboard/add-event">
                 <button className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
                   <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -409,10 +429,7 @@ const EventCalendarPage = () => {
                   <span className="sm:hidden">Add</span>
                 </button>
               </Link>
-              <button className="px-3 py-2 sm:px-4 sm:py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition font-medium flex items-center gap-1 sm:gap-2 text-sm sm:text-base">
-                <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden sm:inline">Export</span>
-              </button>
+              {/* )} */}
             </div>
           </div>
         </div>
