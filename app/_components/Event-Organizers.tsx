@@ -1,22 +1,23 @@
 "use client";
 import React from "react";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import { EncryptedText } from "@/components/ui/encrypted-text";
 
 const content = [
   {
-    title: "Collaborative Editing",
+    title: "RC Innovation Club",
     description:
-      "Work together in real time with your team, clients, and stakeholders. Collaborate on documents, share ideas, and make decisions quickly. With our platform, you can streamline your workflow and increase productivity.",
+      "The RC Innovation Club focuses on robotics, technology, and hands-on innovation. Students collaborate on real-world tech projects, participate in competitions, and build creative solutions that solve practical problems.",
     content: (
       <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] text-white">
-        Collaborative Editing
+        RC Innovation Club
       </div>
     ),
   },
   {
-    title: "Real time changes",
+    title: "RC E-Cell",
     description:
-      "See changes as they happen. With our platform, you can track every modification in real time. No more confusion about the latest version of your project. Say goodbye to the chaos of version control and embrace the simplicity of real-time updates.",
+      "The RC Entrepreneurship Cell empowers students to develop startup ideas, pitch business models, and connect with industry mentors. From idea validation to execution, E-Cell supports future entrepreneurs.",
     content: (
       <div className="flex h-full w-full items-center justify-center text-white">
         <img
@@ -24,35 +25,50 @@ const content = [
           width={300}
           height={300}
           className="h-full w-full object-cover"
-          alt="linear board demo"
+          alt="RC E-Cell activities"
         />
       </div>
     ),
   },
   {
-    title: "Version control",
+    title: "National Service Scheme (NSS)",
     description:
-      "Experience real-time updates and never stress about version control again. Our platform ensures that you're always working on the most recent version of your project, eliminating the need for constant manual updates. Stay in the loop, keep your team aligned, and maintain the flow of your work without any interruptions.",
+      "NSS encourages students to contribute to society through community service, awareness drives, cleanliness campaigns, and social initiatives. It builds leadership, responsibility, and social commitment.",
     content: (
       <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] text-white">
-        Version control
+        NSS Activities
       </div>
     ),
   },
   {
-    title: "Running out of content",
+    title: "Sports Club",
     description:
-      "Experience real-time updates and never stress about version control again. Our platform ensures that you're always working on the most recent version of your project, eliminating the need for constant manual updates. Stay in the loop, keep your team aligned, and maintain the flow of your work without any interruptions.",
+      "The Sports Club promotes physical fitness, teamwork, and competitive spirit. From inter-college tournaments to annual sports meets, students get opportunities to excel in cricket, football, athletics, and more.",
     content: (
       <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] text-white">
-        Running out of content
+        Sports Club
       </div>
     ),
   },
 ];
+
 export function EventOrganizers() {
   return (
-    <div className="w-full py-4">
+    <div className="w-full py-16">
+      {/* Section Heading */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-10 mb-10">
+        <h2 className="text-2xl md:text-4xl font-bold text-black dark:text-white ">
+          <p className="text-center">
+            <EncryptedText
+              text="Event Organizers"
+              encryptedClassName="text-neutral-500"
+              revealedClassName="dark:text-white text-black"
+              revealDelayMs={50}
+            />
+          </p>
+        </h2>
+      </div>
+
       <StickyScroll content={content} />
     </div>
   );

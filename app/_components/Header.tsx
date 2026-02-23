@@ -10,6 +10,7 @@ import {
   MobileNavToggle,
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { useState } from "react";
 
 export default function Header() {
@@ -38,8 +39,13 @@ export default function Header() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Login</NavbarButton>
-            <NavbarButton variant="primary">Sign up</NavbarButton>
+            <SignInButton>
+              <NavbarButton variant="secondary">Login</NavbarButton>
+            </SignInButton>
+
+            <SignUpButton>
+              <NavbarButton variant="primary">Sign up</NavbarButton>
+            </SignUpButton>
           </div>
         </NavBody>
 
@@ -68,20 +74,24 @@ export default function Header() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
+              <SignInButton>
+                <NavbarButton
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Login
+                </NavbarButton>
+              </SignInButton>
+              <SignUpButton>
+                <NavbarButton
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Book a call
+                </NavbarButton>
+              </SignUpButton>
             </div>
           </MobileNavMenu>
         </MobileNav>
